@@ -9,7 +9,7 @@ $loadAverage = sys_getloadavg(); //get Load average on *Nix
 $loadAverageStr = implode(" ", $loadAverage); //join array to string
 $loadAverageNow = $loadAverage[0];
 $message = "Load on server: $loadAverage[0]\nFULL LA: $loadAverageStr";
-$type = checkLoadAverage($message, $loadAverageNow); //get type alert or null
+$type = checkLoadAverage($loadAverageNow); //get type alert or null
 
 if(isNeedAlert($type)) {
     $message = $type.$message; //emoji + message
@@ -24,7 +24,7 @@ function isNeedAlert($type)
     }
 }
 
-function checkLoadAverage($message, $loadAverageNow) {
+function checkLoadAverage($loadAverageNow) {
     $type = ['warning'=> "😡", 'critical' => "💀"];
 
     switch ($loadAverageNow) {
