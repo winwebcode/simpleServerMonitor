@@ -3,14 +3,13 @@
 
 /*const Telegram*/
 define('TELEGRAM_TOKEN', '');
-define('TELEGRAM_CHATID', ''); // insert your Chat ID (get in show JSON bot)
-
+define('TELEGRAM_CHATID', ''); //insert your Chat ID (get in show JSON bot)
 
 $loadAverage = sys_getloadavg(); //get Load average on *Nix
 $loadAverageStr = implode(" ", $loadAverage); //join array to string
 $loadAverageNow = $loadAverage[0];
-$message = "Нагрузка на сервере: $loadAverage[0]\nFULL LA: $loadAverageStr";
-$type = checkLoadAverage($message, $loadAverage); //get type alert or null
+$message = "Load on server: $loadAverage[0]\nFULL LA: $loadAverageStr";
+$type = checkLoadAverage($message, $loadAverageNow); //get type alert or null
 
 if(isNeedAlert($type)) {
     $message = $type.$message; //emoji + message
