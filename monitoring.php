@@ -1,31 +1,39 @@
-<?php
+﻿﻿<?php
 /*****simpleServerMonitor - motinoring Load Average on nix servers****/
 
 /*const Telegram*/
 define('TELEGRAM_TOKEN', '');
 define('TELEGRAM_CHATID', ''); //insert your Chat ID (get in show JSON bot)
 
-$loadAverage = sys_getloadavg(); //get Load average on *Nix
-$loadAverageStr = implode(" ", $loadAverage); //join array to string
-$loadAverageNow = $loadAverage[0];
-$message = "Load on server: $loadAverage[0]\nFULL LA: $loadAverageStr";
-$type = checkLoadAverage($loadAverageNow); //get type alert or null
+$loadAverage = getLoadAverage();
+$serverName = "Leaseweb NL";
+$uptime = getUpTime();
+$message = "Load on server $serverName:\n".$loadAverage['now']."\nFULL LA: ". $loadAverage['full']."\nUpTime: $uptime days";
+$type = checkLoadAverage($message, $loadAverage['now']); //get type alert or null
 
 if(isNeedAlert($type)) {
     $message = $type.$message; //emoji + message
     sendAlertTelegram(TELEGRAM_TOKEN, TELEGRAM_CHATID, $message);
 }
 
+function getLoadAverage()
+{
+	$loadAverage = sys_getloadavg(); //get Load average on *Nix
+	$loadAverage['now'] = $loadAverage[0];
+	$loadAverage['full'] = implode(" ", $loadAverage); //join array to string
+	return $loadAverage;
+}
 
 function isNeedAlert($type)
 {
     if(!is_null($type)) {
         return true;
     }
+	return false;
 }
 
-function checkLoadAverage($loadAverageNow) {
-    $type = ['warning'=> "😡", 'critical' => "💀"];
+function checkLoadAverage($message, $loadAverageNow) {
+    $type = ['warning'=> "😡", 'critical' => "☠"];
 
     switch ($loadAverageNow) {
         case ($loadAverageNow >= 5 and $loadAverageNow < 10):
@@ -54,4 +62,12 @@ function sendAlertTelegram($token, $chatID, $message)
         )
     );
     curl_exec($ch);
+}
+
+function getUpTime()
+{
+    $uptime = @file_get_contents('/proc/uptime');
+    $seconds = floatval($uptime);
+    $result = round($seconds / 86400, 2);
+    return $result;
 }
