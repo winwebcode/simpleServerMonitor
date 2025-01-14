@@ -7,7 +7,7 @@ const TELEGRAM_TOKEN = '';
 const TELEGRAM_CHATID = ''; //insert your Chat ID (get in show JSON bot)
 
 $loadAverage = getLoadAverage();
-$serverName = "Leaseweb NL";
+$serverName = 'Leaseweb NL';
 $uptime = getUpTime();
 $message = "Load on server $serverName:\n" . $loadAverage['now'] . "\nFULL LA: " . $loadAverage['full'] . "\nUpTime: $uptime days";
 $type = checkLoadAverage($loadAverage['now']); //get type alert or null
@@ -17,23 +17,25 @@ if (isNeedAlert($type)) {
     sendAlertTelegram(TELEGRAM_TOKEN, TELEGRAM_CHATID, $message);
 }
 
-function getLoadAverage()
+function getLoadAverage(): array
 {
     $loadAverage = sys_getloadavg(); //get Load average on *Nix
     $loadAverage['now'] = $loadAverage[0];
     $loadAverage['full'] = implode(" ", $loadAverage); //join array to string
+    
     return $loadAverage;
 }
 
-function isNeedAlert($type)
+function isNeedAlert(?string $type): bool
 {
     if (!is_null($type)) {
         return true;
     }
+    
     return false;
 }
 
-function checkLoadAverage($loadAverageNow)
+function checkLoadAverage(int $loadAverageNow): ?string
 {
     $type = ['warning' => "😡", 'critical' => "☠"];
 
@@ -47,7 +49,7 @@ function checkLoadAverage($loadAverageNow)
     }
 }
 
-function sendAlertTelegram($token, $chatID, $message)
+function sendAlertTelegram(string $token, string $chatID, string $message): void
 {
     $ch = curl_init();
     curl_setopt_array(
@@ -66,9 +68,10 @@ function sendAlertTelegram($token, $chatID, $message)
     curl_exec($ch);
 }
 
-function getUpTime()
+function getUpTime(): int
 {
     $uptime = @file_get_contents('/proc/uptime');
     $seconds = floatval($uptime);
+    
     return round($seconds / 86400, 2);
 }
