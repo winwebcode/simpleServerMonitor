@@ -37,7 +37,7 @@ function isNeedAlert(?string $type): bool
 
 function checkLoadAverage(int $loadAverageNow): ?string
 {
-    $type = ['warning' => "😡", 'critical' => "☠"];
+    $type = ['warning' => '😡', 'critical' => '☠'];
 
     switch ($loadAverageNow) {
         case ($loadAverageNow >= 5 and $loadAverageNow < 10):
